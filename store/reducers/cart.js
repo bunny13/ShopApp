@@ -13,29 +13,70 @@ const reducer = (state=initalState, action) => {
             const prodPrice = addedProduct.price;
             const prodTitle  = addedProduct.title;
 
-            let updatedCartItem = {};
+            let updatedOrNewCartItem = {};
             if(state.cartProducts[addedProduct.id]){
-                updatedCartItem = {
+                updatedOrNewCartItem = {
                     quantity: state.cartProducts[action.productDetails.id].quantity + 1,
                     price:prodPrice,
                     title:prodTitle,
-                    sum: state.cartProducts[addedProduct.id].sum + prodPrice
+                    sum: state.cartProducts[addedProduct.id].sum + prodPrice,
+                    id: addedProduct.id
                 };
             }else{
-                updatedCartItem = {
+                updatedOrNewCartItem = {
                     quantity: 1,
                     price:prodPrice,
                     title:prodTitle,
-                    sum: prodPrice
+                    sum: prodPrice,
+                    id: addedProduct.id
+                };
+            }
+            return {
+                ...state,
+                cartProducts: {...state.cartProducts,[action.productDetails.id]: updatedOrNewCartItem},
+                totalPrice: state.totalPrice + prodPrice
+            }
+        case DELETE_CART:
+            const productDetails = state.cartProducts[action.productId];
+            let updatedCartItem = {};
+
+            if(productDetails.quantity > 1){
+                updatedCartItem = {
+                    quantity: state.cartProducts[productDetails.id].quantity - 1,
+                    price:productDetails.price,
+                    title:productDetails.title,
+                    sum: state.cartProducts[productDetails.id].sum - productDetails.price,
+                    id: productDetails.id
+                };
+                updatedCartItems = {...state.cartProducts,[productDetails.id]: updatedCartItem}
+            }else{
+                updatedCartItems = { ...state.cartProducts }
+                delete updatedCartItems[productDetails.id]
+            }
+            return {
+                ...state,
+                cartProducts: updatedCartItems,
+                totalPrice: state.totalPrice - productDetails.price
+            }
+          /*  const addedProduct  = action.productDetails;
+            const prodPrice = addedProduct.price;
+            const prodTitle  = addedProduct.title;
+
+            if(state.cartProducts[productId]){
+                updatedCartItem = {
+                    quantity: state.cartProducts[action.productDetails.id].quantity - 1,
+                    price:prodPrice,
+                    title:prodTitle,
+                    sum: state.cartProducts[addedProduct.id].sum - prodPrice,
+                    id: addedProduct.id
                 };
             }
             return {
                 ...state,
                 cartProducts: {...state.cartProducts,[action.productDetails.id]: updatedCartItem},
-                totalPrice: state.totalPrice + prodPrice
-            }
-        case DELETE_CART:
-        break;
+                totalPrice: state.totalPrice - prodPrice
+            }*/
+            break;
         default:
             return state;
     }
