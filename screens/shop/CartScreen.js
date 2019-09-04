@@ -2,6 +2,9 @@ import React from "react";
 import { View, Text, StyleSheet, Button, FlatList } from "react-native";
 import { connect } from 'react-redux';
 import Color from "../../constants/Color";
+import { Platform } from "@unimodules/core";
+import CartItem from "../../components/shop/CartItem";
+import { deleteToCart } from "../../store/actions/cart";
 
 const styles=StyleSheet.create({
     screen:{
@@ -25,35 +28,11 @@ const styles=StyleSheet.create({
     },
     amount:{
         color: Color.primary
-    },
-    cartItem:{
-        flexDirection:"row"
     }
 });
 
-const cartItems = (({renderData}) => {
-    console.log("heere");
-    console.log(renderData);
-    return(
-        <View > 
-            <Text>
-                {renderData.quantity}
-            </Text>
-            <Text>
-                {renderData.title}
-            </Text>
-            <Text>
-                ${renderData.sum}
-            </Text>
-            <View>
-                <Button title="Delete" />
-            </View>
-        </View>
-    )
-}); 
-
 const CartScreen = (props) => {
-    const availableProducts = props.cartProducts;
+    const availableProducts = Object.values(props.cartProducts);
     return(
         <View style={styles.screen}>
             <View style={styles.summary}>
@@ -62,13 +41,20 @@ const CartScreen = (props) => {
                 </Text>
                 <Button color={Color.accent} title="Order Now" />
             </View>
-            <View style={styles.cartItem}>
-                <FlatList 
-                    data = {Object.keys(availableProducts)}
-                    renderItem = {cartItems}  
-                    keyExtractor = {item => item.id}            
-                />                
-            </View>
+            <FlatList 
+                data = {availableProducts}
+                keyExtractor = {item => item.id}       
+                renderItem = {({item}) => {
+                    return (
+                        <CartItem 
+                            renderData = {item}
+                            onRemoveIcon = {() => {
+                                props.onRemoveIcon(item.id);
+                            }}
+                        />
+                    )
+                }}       
+            /> 
         </View>
     )
 }
@@ -80,4 +66,10 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(CartScreen);
+const mapDispatchToProps = (dispatch) => {
+    return{
+        onRemoveIcon: (productId) => dispatch(deleteToCart(productId))
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(CartScreen);
