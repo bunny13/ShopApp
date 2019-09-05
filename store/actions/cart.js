@@ -1,4 +1,4 @@
-import { ADD_CART, DELETE_CART } from './actionTypes';
+import { ADD_CART, DELETE_CART, CLEAR_CART } from './actionTypes';
 
 export const addToCart = (productDetails) => {
     return {
@@ -11,6 +11,12 @@ export const deleteToCart = (productId) => {
     return {
         type: DELETE_CART,
         productId: productId
+    }
+}
+
+export const clearCart = () => {
+    return {
+        type: CLEAR_CART,
     }
 }
 
