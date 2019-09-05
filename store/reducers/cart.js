@@ -1,4 +1,4 @@
-import { ADD_CART, DELETE_CART } from "../actions/actionTypes";
+import { ADD_CART, DELETE_CART, CLEAR_CART } from "../actions/actionTypes";
 
 const initalState = {
     cartProducts:{},
@@ -58,25 +58,8 @@ const reducer = (state=initalState, action) => {
                 cartProducts: updatedCartItems,
                 totalPrice: state.totalPrice - productDetails.price
             }
-          /*  const addedProduct  = action.productDetails;
-            const prodPrice = addedProduct.price;
-            const prodTitle  = addedProduct.title;
-
-            if(state.cartProducts[productId]){
-                updatedCartItem = {
-                    quantity: state.cartProducts[action.productDetails.id].quantity - 1,
-                    price:prodPrice,
-                    title:prodTitle,
-                    sum: state.cartProducts[addedProduct.id].sum - prodPrice,
-                    id: addedProduct.id
-                };
-            }
-            return {
-                ...state,
-                cartProducts: {...state.cartProducts,[action.productDetails.id]: updatedCartItem},
-                totalPrice: state.totalPrice - prodPrice
-            }*/
-            break;
+            case CLEAR_CART:
+                return initalState;
         default:
             return state;
     }
