@@ -1,38 +1,84 @@
-import React from "react";
-import { FlatList, View, Text, StyleSheet } from "react-native";
+import React,{ useEffect, useState } from "react";
+import { FlatList, View, Text, StyleSheet, Button, ActivityIndicator } from "react-native";
 import { connect } from 'react-redux';
 import { viewProducts } from '../../store/actions/products'; 
 import { addToCart } from '../../store/actions/cart'; 
 import ProductItem from '../../components/shop/ProductItem';
 import IoniconsHeaderButton from '../../components/UI/HeaderButton';
 import { HeaderButtons, HeaderButton, Item } from 'react-navigation-header-buttons';
-
-const styles = StyleSheet.create({
-    screen:{
-        flex:1,
-        justifyContent: 'center',
-        alignItems : 'center',
-        width:'100%'
-    }
-});
+import Colors from '../../constants/Color';
 
 const ProductOverviewScreen = (props) => {
+    const [isLoading, setisLoading] = useState(false);
     const availableProducts = props.availableProducts;
+
+    useEffect(() => {
+        const loadingFn = async () => {
+            setisLoading(true);
+            await props.onViewProducts();
+            setisLoading(false);
+        }
+        loadingFn();
+    }, []);
+
+    const selectItemHandler = (id, title) => {
+        props.navigation.navigate('ProductDetail',{
+            productId: id,
+            productTitle: title
+        });
+    }
+
+    if(isLoading){
+        return (
+            <View style={{
+                'flex': 1,
+                'justifyContent': 'center',
+                'alignItems': 'center'
+            }}>
+                <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+        )
+    }
+
+    if(!isLoading && availableProducts.length === 0){
+        return (
+            <View style={{
+                'flex': 1,
+                'justifyContent': 'center',
+                'alignItems': 'center'
+            }}>
+                <Text>No Products! Start adding some :-)</Text>
+            </View>
+        )
+    }
+
      const listView = (renderData) => {
          return (
             <ProductItem 
                 src={renderData.item.imageUrl}
                 title={renderData.item.title}
                 price={renderData.item.price}
-                onViewDetail={() => {
-                    props.navigation.navigate('ProductDetail',{
-                        productId: renderData.item.id
-                    });
+                onSelect={() => {
+                    selectItemHandler(renderData.item.id, renderData.item.title)
                 }}
-                onAddToCart={() => {
-                   props.onAddToCart(renderData.item)
-                }}
-            />
+                
+            >
+                <Button 
+                    title="Details" 
+                    onPress={() => {
+                        selectItemHandler(renderData.item.id)
+                    }}
+                    color={Colors.primary}
+                />
+                <Button 
+                    title="Add to Card" 
+                    onPress={props.onAddToCart}
+                    color={Colors.primary}
+                    onPress={() => {
+                        props.onAddToCart(renderData.item)
+                     }}
+                />
+            </ProductItem>
          )
      }
     return (
@@ -46,6 +92,11 @@ const ProductOverviewScreen = (props) => {
 
 ProductOverviewScreen.navigationOptions = (navData) => {
     return {
+        headerLeft: (
+            <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+                <Item title="Menu" iconName="md-menu" onPress={() => navData.navigation.toggleDrawer()} />
+            </HeaderButtons>
+        ),
         headerRight: (
             <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
                 <Item title="Cart" iconName="md-cart" onPress={() => navData.navigation.navigate('CartOverview')} />
@@ -57,7 +108,7 @@ ProductOverviewScreen.navigationOptions = (navData) => {
 
 const mapStateToProps = (state) => {
     return {
-        availableProducts: state.product.availableProducts
+        availableProducts: state.products.availableProducts
     }
 }
 
