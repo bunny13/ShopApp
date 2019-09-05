@@ -1,3 +1,10 @@
 export const ADD_CART = 'ADD_CART';
 export const DELETE_CART = 'DELETE_CART';
 export const VIEW_PRODUCTS = 'VIEW_PRODUCTS';
+export const ADD_ORDER = 'ADD_ORDER';
+export const VIEW_ORDER = 'VIEW_ORDER';
+export const CLEAR_CART = 'CLEAR_CART';
+export const DELETE_PRODUCT = 'DELETE_PRODUCT';
+export const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
+export const CREATE_PRODUCT = 'CREATE_PRODUCT';
+export const SET_PRODUCTS = 'SET_PRODUCTS';
