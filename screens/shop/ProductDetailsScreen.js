@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, ScrollView, Image, Button, StyleSheet } from 'react-native';
 import PRODUCTS from '../../dummy-data/products';
 import Color from '../../constants/Color';
+import { connect } from "react-redux";
 
 const styles= StyleSheet.create({
     image:{
@@ -27,8 +28,7 @@ const styles= StyleSheet.create({
 
 const ProductDetailsScreen = (props) => {
     const productId = props.navigation.getParam('productId');
-    const selectedProduct = PRODUCTS.find(product => product.id === productId);
-    console.log(selectedProduct);
+    const selectedProduct = props.availableProducts.find(product => product.id === productId);
     return (
         <ScrollView> 
             <Image style={styles.image}
@@ -51,11 +51,16 @@ const ProductDetailsScreen = (props) => {
 }
 
 ProductDetailsScreen.navigationOptions = (navigationData) => {
-    const productId = navigationData.navigation.getParam('productId');
-    const selectedProduct = PRODUCTS.find(product => product.id === productId);
+    const prodTitle = navigationData.navigation.getParam('productTitle');
     return {
-        headerTitle: selectedProduct.title
+        headerTitle: prodTitle
     }
 }
 
-export default ProductDetailsScreen;
+const mapStateToProps = (state) => {
+    return {
+        availableProducts: state.products.availableProducts
+    }
+}
+
+export default connect(mapStateToProps)(ProductDetailsScreen);
