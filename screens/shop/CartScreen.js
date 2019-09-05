@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import Color from "../../constants/Color";
 import { Platform } from "@unimodules/core";
 import CartItem from "../../components/shop/CartItem";
-import { deleteToCart } from "../../store/actions/cart";
+import { deleteToCart, clearCart } from "../../store/actions/cart";
+import { addOrder } from "../../store/actions/order";
 
 const styles=StyleSheet.create({
     screen:{
@@ -32,22 +33,41 @@ const styles=StyleSheet.create({
 });
 
 const CartScreen = (props) => {
-    const availableProducts = Object.values(props.cartProducts);
+    const cartTotalAmount = props.totalPrice;
+    const transformedCartItems = [];
+    if(props.cartProducts !== undefined){
+        for (const key in props.cartProducts) {
+            transformedCartItems.push({
+              id: key,
+              title: props.cartProducts[key].title,
+              price: props.cartProducts[key].price,
+              quantity: props.cartProducts[key].quantity,
+              sum: props.cartProducts[key].sum
+            });
+          }
+    }  
+    const cartItems = transformedCartItems.sort((a, b) =>
+        a.productId > b.productId ? 1 : -1
+    );
     return(
         <View style={styles.screen}>
             <View style={styles.summary}>
                 <Text style={styles.summaryText}>
-                    Total: <Text style={styles.amount}>${props.totalPrice}</Text>
+                    Total: <Text style={styles.amount}>${cartTotalAmount}</Text>
                 </Text>
-                <Button color={Color.accent} title="Order Now" />
+                <Button color={Color.accent} title="Order Now" onPress={() => {
+                    props.onClearCart()
+                    props.onOrderNow(cartItems, cartTotalAmount)
+                    }}/>
             </View>
             <FlatList 
-                data = {availableProducts}
+                data = {cartItems}
                 keyExtractor = {item => item.id}       
                 renderItem = {({item}) => {
                     return (
                         <CartItem 
                             renderData = {item}
+                            deletable = {true}
                             onRemoveIcon = {() => {
                                 props.onRemoveIcon(item.id);
                             }}
@@ -68,7 +88,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return{
-        onRemoveIcon: (productId) => dispatch(deleteToCart(productId))
+        onRemoveIcon: (productId) => dispatch(deleteToCart(productId)),
+        onOrderNow: (orderData, totalAmt) => dispatch(addOrder(orderData, totalAmt)),
+        onClearCart: () => dispatch(clearCart())
     }
 }
 
