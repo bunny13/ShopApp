@@ -11,6 +11,9 @@ import { connect } from "react-redux";
 const UserProductsScreen = props => {
   const userProducts = props.userProducts.userProducts;
 
+  console.log("Testing");
+  console.log(userProducts);
+
   const editProductHandler = (id) => {
     props.navigation.navigate('EditProduct',{
         productId: id

@@ -30,7 +30,7 @@ const OrderItem = (props) => {
     return (
         <View style={styles.orderContainer}>
             <View style={styles.summary} >
-                <Text>{props.totalAmt.toFixed(2)}</Text>
+                <Text>{parseInt(props.totalAmt).toFixed(2)}</Text>
                 <Text>{props.orderedDate}</Text>
             </View>
             <Button color={Color.primary} title="Show Details" onPress={() => setOrderList(true)}/>

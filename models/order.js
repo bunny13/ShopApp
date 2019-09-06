@@ -2,7 +2,6 @@ import moment from "moment";
 
 class Order {
     constructor(id, items, totalAmt, orderedDate){
-        console.log("i amhrer");
         this.id = id;
         this.items = items;
         this.totalAmt = totalAmt;

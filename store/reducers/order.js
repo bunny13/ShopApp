@@ -22,7 +22,11 @@ const orderReducer = (state=initalState, action) => {
             }
         break;
         case VIEW_ORDER:
-
+            console.log("HAHA");
+            return {
+                ...state,
+                order: action.order
+            }
         break;
         default:
             return state;

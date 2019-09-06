@@ -1,18 +1,20 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import productReducer from './store/reducers/products';
 import cartReducer from './store/reducers/cart';
-import ProductOverviewScreen from './screens/shop/ProductOverviewScreen';
+import orderReducer from './store/reducers/order';
 import ShopNavigator from './navigation/ShopNavigator';
+import thunk from 'redux-thunk';
 
 const rootReducer = combineReducers({
-  product: productReducer,
-  cart: cartReducer
+  products: productReducer,
+  cart: cartReducer,
+  orders:orderReducer
 });
 
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 export default function App() {
   return (

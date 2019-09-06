@@ -9,7 +9,7 @@ export const viewProducts = () => {
         const loadedProducts = [];
         
         for(const key in responseData){
-            loadedProducts.push(new Product(key,"u1",responseData[key].prodData.title,responseData[key].prodData.imageUrl,responseData[key].prodData.description, responseData[key].prodData.price));
+            loadedProducts.push(new Product(key,"u1",responseData[key].title,responseData[key].imageUrl,responseData[key].description, responseData[key].price));
         }
 
         dispatch({
@@ -20,10 +20,24 @@ export const viewProducts = () => {
 } 
 
 export const deleteProduct = productId => {
-  return { type: DELETE_PRODUCT, pid: productId };
+  return async (dispatch) => {
+
+       const response = await fetch(`https://rn-guide-854b4.firebaseio.com/products/${productId}.json`,{
+           method:'DELETE'
+       });
+
+        dispatch({ 
+            type: DELETE_PRODUCT, 
+            pid: productId 
+        })
+    }
 };
 
 export const createProduct = prodData => {
+    const imageUrl = prodData.imageUrl;
+    const title = prodData.title;
+    const price = prodData.price;
+    const description = prodData.description;
     return async dispatch => {
         //Async Code
         const response = await fetch("https://rn-guide-854b4.firebaseio.com/products.json",{
@@ -32,11 +46,14 @@ export const createProduct = prodData => {
                 'Content-Type': 'application/json'
             },
             body:JSON.stringify({
-                prodData
+                title,
+                imageUrl,
+                price,
+                description
             })
         });
 
-        const resData = await response.json();
+        const resData = await response.json();  
         prodData.id = resData.name;
 
         dispatch({
@@ -47,8 +64,23 @@ export const createProduct = prodData => {
 }
 
 export const updateProduct = prodData => {
-    return {
-        type: UPDATE_PRODUCT,
-        prodData: prodData
+    console.log(prodData);
+    return async (dispatch) => {
+        var responseData = await fetch(`https://rn-guide-854b4.firebaseio.com/products/${prodData.id}.json`,{
+            method: "PUT",
+            headers :{
+                "Content-Type": 'application/json'
+            },
+            body: JSON.stringify(
+                prodData
+            )
+        });
+
+        var resData = await responseData.json();
+
+        dispatch({
+            type: UPDATE_PRODUCT,
+            prodData: prodData
+        })
     }
 }

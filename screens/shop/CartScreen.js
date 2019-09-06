@@ -33,6 +33,7 @@ const styles=StyleSheet.create({
 });
 
 const CartScreen = (props) => {
+    console.log(props);
     const cartTotalAmount = props.totalPrice;
     const transformedCartItems = [];
     if(props.cartProducts !== undefined){

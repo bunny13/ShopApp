@@ -1,4 +1,4 @@
-import React,{ useEffect, useState } from "react";
+import React,{ useEffect, useState, useCallback } from "react";
 import { FlatList, View, Text, StyleSheet, Button, ActivityIndicator } from "react-native";
 import { connect } from 'react-redux';
 import { viewProducts } from '../../store/actions/products'; 
@@ -10,15 +10,28 @@ import Colors from '../../constants/Color';
 
 const ProductOverviewScreen = (props) => {
     const [isLoading, setisLoading] = useState(false);
+    const [isRefresh, setIsRefreshing] = useState(false);
     const availableProducts = props.availableProducts;
 
+    const loadingScreenAgain = useCallback(async () => {
+        setIsRefreshing(true);
+        await props.onViewProducts();
+        setIsRefreshing(false);
+        console.log("I am here");
+    }, [setisLoading]);
+
     useEffect(() => {
-        const loadingFn = async () => {
-            setisLoading(true);
-            await props.onViewProducts();
-            setisLoading(false);
+        const reloadComponent = props.navigation.addListener('willFocus', loadingScreenAgain);
+        return () => {
+            reloadComponent.remove()
         }
-        loadingFn();
+    }, [loadingScreenAgain]);
+
+    useEffect(() => {
+        setisLoading(true);
+        loadingScreenAgain().then(() => {
+            setisLoading(false);
+        });
     }, []);
 
     const selectItemHandler = (id, title) => {
@@ -84,6 +97,8 @@ const ProductOverviewScreen = (props) => {
     return (
         <FlatList 
             data = {availableProducts}
+            refreshing = {isRefresh}
+            onRefresh = {loadingScreenAgain}
             renderItem = {listView}
             keyExtractor={item => item.id}
         />

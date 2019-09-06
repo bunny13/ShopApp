@@ -35,9 +35,9 @@ export default (state = initialState, action) => {
                 if(prod.id === action.prodData.id) {
                     return {
                         ...prod,
+                        imageUrl: action.prodData.imageUrl,
                         title: action.prodData.title,
-                        description: action.prodData.description,
-                        imageUrl: action.prodData.imageUrl
+                        description: action.prodData.description
                     }
                 }
                 return prod
@@ -46,9 +46,9 @@ export default (state = initialState, action) => {
                 if(prod.id === action.prodData.id) {
                     return {
                         ...prod,
+                        imageUrl: action.prodData.imageUrl,
                         title: action.prodData.title,
-                        description: action.prodData.description,
-                        imageUrl: action.prodData.imageUrl
+                        description: action.prodData.description
                     }
                 }
                 return prod
@@ -58,8 +58,8 @@ export default (state = initialState, action) => {
           const newProduct = new Product(
               action.prodData.id,
               "u1",
-              action.prodData.imageUrl,
               action.prodData.title,
+              action.prodData.imageUrl,
               action.prodData.description,
               action.prodData.price
           )

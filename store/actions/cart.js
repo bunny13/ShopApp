@@ -1,6 +1,8 @@
 import { ADD_CART, DELETE_CART, CLEAR_CART } from './actionTypes';
 
 export const addToCart = (productDetails) => {
+    console.log("clicked");
+    console.log(productDetails);
     return {
         type: ADD_CART,
         productDetails: productDetails

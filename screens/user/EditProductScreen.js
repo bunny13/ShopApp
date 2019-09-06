@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Text, View, StyleSheet, TextInput } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { Text, View, StyleSheet, TextInput, ScrollView, ActivityIndicator } from "react-native";
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { connect } from "react-redux";
 import { updateProduct, createProduct } from "../../store/actions/products";
 
 import HeaderButton from '../../components/UI/HeaderButton';
+import Colors from '../../constants/Color';
 
 const styles = StyleSheet.create({
     formControl:{
@@ -28,6 +28,8 @@ const styles = StyleSheet.create({
 
 const EditProductScreen = (props) => {
     const prodId = props.navigation.getParam('productId');
+    const [isLoading, setIsLoading] = useState(false);
+
     const editProduct = props.userProducts.userProducts.find(prod => prod.id === prodId);
 
     const [title, setTitle] = useState(editProduct ? editProduct.title : "");
@@ -35,7 +37,7 @@ const EditProductScreen = (props) => {
     const [price, setPrice] = useState(editProduct ? editProduct.price : "");
     const [description, setDescription] = useState(editProduct ? editProduct.description : "");
 
-    const submitHandler = useCallback(() => {
+    const submitHandler = useCallback( async () => {
         const prodData = {
             'id': prodId,
             'title':title,
@@ -43,21 +45,27 @@ const EditProductScreen = (props) => {
             'price': price,
             'description': description
         };
-        console.log(prodData)
+        setIsLoading(true);
         if(editProduct){
-            props.onUpdateProduct(prodData);
+            await props.onUpdateProduct(prodData);
         }else{
-            props.onCreateProduct(prodData);
+            await props.onCreateProduct(prodData);
         }
-        
-       // props.navigation.navigate("UserProducts");
-    }, [prodId, title, imageUrl, price, description]);
+        setIsLoading(false);
+        props.navigation.goBack();
+    }, [prodId, title, imageUrl, price, description, setIsLoading]);
 
     useEffect(() => {
-        console.log(":asdadsadadd");
-        console.log(title);
         props.navigation.setParams({ submit: submitHandler})
     }, [submitHandler]);
+
+    if(isLoading){
+        return (
+            <View style={{flex:1,justifyContent:"center","alignItems":"center"}}>
+                <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+        )
+    }
 
     return (
         <ScrollView>
